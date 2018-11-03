@@ -50,7 +50,10 @@ def main():
                 # store peers
                 peers.append((peer['node_info']['id'], addr))
 
-            queried.append(query_url)
+            # we do not record seed_url
+            if query_url != seed_url:
+                queried.append(query_url)
+
             log.debug(peers)
 
         except Exception, e:
