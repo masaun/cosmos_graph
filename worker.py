@@ -65,7 +65,7 @@ def main():
             for peer_id, peer_ip in peers:
                 peer_node = gdb.nodes.create(id=peer_id, ip=peer_ip)
                 centre_peer.relationships.create("link", peer_node)
-
+                peer_node.relationships.create("link", centre_peer)
 
         except Exception, e:
             log.debug(e.message)
