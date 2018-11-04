@@ -17,6 +17,11 @@ queried = []
 
 queue = Queue()
 
+from neo4jrestclient.client import GraphDatabase
+url = "http://neo4j:test1234@localhost:7474/db/data/"
+gdb = GraphDatabase(url)
+# All Delete
+gdb.query("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r", data_contents=True)
 
 def main():
     while True:
