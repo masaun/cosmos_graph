@@ -30,10 +30,10 @@ def main():
         try:
             # if queue is empty, we do query from origin
             if queue.empty():
-                queue.put(seed_url)
+                queue.put((0,seed_url))
 
             # get one peer which we don't queried before
-            query_url = queue.get()
+            peer_id, query_url = queue.get()
             print query_url
             if query_url in queried:
                 continue
@@ -50,16 +50,22 @@ def main():
                     rpc_addr = [element for element in peer['node_info']['other'] if 'rpc_addr' in element]
                     rpc_port = rpc_addr[0].rsplit(':', 1)[1] if rpc_addr else '26657'
                     rpc_url = 'http://{}:{}/net_info'.format(addr, rpc_port)
-                    queue.put(rpc_url)
+                    peer_id = peer['node_info']['id']
+                    queue.put((peer_id, rpc_url))
 
                 # store peers
-                peers.append((peer['node_info']['id'], addr))
+                peers.append((peer_id, addr))
 
             # we do not record seed_url
             if query_url != seed_url:
                 queried.append(query_url)
 
             log.debug(peers)
+            centre_peer = gdb.nodes.create(id=peer_id)
+            for peer_id, peer_ip in peers:
+                peer_node = gdb.nodes.create(id=peer_id, ip=peer_ip)
+                centre_peer.relationships.create("link", peer_node)
+
 
         except Exception, e:
             log.debug(e.message)
